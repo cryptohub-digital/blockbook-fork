@@ -1,22 +1,22 @@
 SHELL = /bin/bash
 VERSION ?= devel
-GITCOMMIT = $(shell cd /src && git config --global --add safe.directory /src && git describe --always --dirty)
+GITCOMMIT = $(shell cd /src && git config --global --add safe.directory /src && git describe --always)
 BUILDTIME = $(shell date --iso-8601=seconds)
-LDFLAGS := -X github.com/trezor/blockbook/common.version=$(VERSION) -X github.com/trezor/blockbook/common.gitcommit=$(GITCOMMIT) -X github.com/trezor/blockbook/common.buildtime=$(BUILDTIME)
-BLOCKBOOK_BASE := $(GOPATH)/src/github.com/trezor
-BLOCKBOOK_SRC := $(BLOCKBOOK_BASE)/blockbook
+LDFLAGS := -X github.com/cryptohub-digital/blockbook-fork/common.version=$(VERSION) -X github.com/cryptohub-digital/blockbook-fork/common.gitcommit=$(GITCOMMIT) -X github.com/cryptohub-digital/blockbook-fork/common.buildtime=$(BUILDTIME)
+BLOCKBOOK_BASE := $(GOPATH)/src/github.com/cryptohub-digital
+BLOCKBOOK_SRC := $(BLOCKBOOK_BASE)/blockbook-fork
 ARGS ?=
 
 all: build tools
 
 build: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go build -o $(CURDIR)/blockbook -ldflags="-s -w $(LDFLAGS)" $(ARGS)
-	cp $(CURDIR)/blockbook /out/blockbook
+	cd $(BLOCKBOOK_SRC) && go build -o $(CURDIR)/blockbook-fork -ldflags="-s -w $(LDFLAGS)" $(ARGS)
+	cp $(CURDIR)/blockbook-fork /out/blockbook
 	chown $(PACKAGER) /out/blockbook
 
 build-debug: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go build -o $(CURDIR)/blockbook -ldflags="$(LDFLAGS)" $(ARGS)
-	cp $(CURDIR)/blockbook /out/blockbook
+	cd $(BLOCKBOOK_SRC) && go build -o $(CURDIR)/blockbook-fork -ldflags="$(LDFLAGS)" $(ARGS)
+	cp $(CURDIR)/blockbook-fork /out/blockbook
 	chown $(PACKAGER) /out/blockbook
 
 tools:
@@ -24,13 +24,13 @@ tools:
 	chown $(PACKAGER) /out/{ldb,sst_dump}
 
 test: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest' `go list ./... | grep -vP '^github.com/trezor/blockbook/(contrib|tests)'` $(ARGS)
+	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest' `go list ./... | grep -vP '^github.com/cryptohub-digital/blockbook-fork/(contrib|tests)'` $(ARGS)
 
 test-integration: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go test -tags 'integration' `go list github.com/trezor/blockbook/tests/...` $(ARGS)
+	cd $(BLOCKBOOK_SRC) && go test -tags 'integration' `go list github.com/cryptohub-digital/blockbook-fork/tests/...` $(ARGS)
 
 test-all: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest integration' `go list ./... | grep -v '^github.com/trezor/blockbook/contrib'` $(ARGS)
+	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest integration' `go list ./... | grep -v '^github.com/cryptohub-digital/blockbook-fork/contrib'` $(ARGS)
 
 prepare-sources:
 	@ [ -n "`ls /src 2> /dev/null`" ] || (echo "/src doesn't exist or is empty" 1>&2 && exit 1)
