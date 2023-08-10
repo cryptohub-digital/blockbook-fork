@@ -26,13 +26,13 @@ if ([ $package = "backend" ] || [ $package = "all" ]) && [ -d build/pkg-defs/bac
 fi
 
 # blockbook
-if ([ $package = "blockbook" ] || [ $package = "all" ]) && [ -d build/pkg-defs/blockbook-fork ]; then
-    export VERSION=$(cd build/pkg-defs/blockbook-fork && dpkg-parsechangelog | sed -rne 's/^Version: ([0-9.]+)([-+~].+)?$/\1/p')
+if ([ $package = "blockbook" ] || [ $package = "all" ]) && [ -d build/pkg-defs/blockbook ]; then
+    export VERSION=$(cd build/pkg-defs/blockbook && dpkg-parsechangelog | sed -rne 's/^Version: ([0-9.]+)([-+~].+)?$/\1/p')
 
-    cp Makefile ldb sst_dump build/pkg-defs/blockbook-fork
-    cp -r /src/static build/pkg-defs/blockbook-fork
-    mkdir build/pkg-defs/blockbook-fork/cert && cp /src/server/testcert.* build/pkg-defs/blockbook-fork/cert
-    (cd build/pkg-defs/blockbook-fork && dpkg-buildpackage -b -us -uc $@)
+    cp Makefile ldb sst_dump build/pkg-defs/blockbook
+    cp -r /src/static build/pkg-defs/blockbook
+    mkdir build/pkg-defs/blockbook/cert && cp /src/server/testcert.* build/pkg-defs/blockbook/cert
+    (cd build/pkg-defs/blockbook && dpkg-buildpackage -b -us -uc $@)
 fi
 
 # copy packages
